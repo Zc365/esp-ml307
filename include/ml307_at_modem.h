@@ -77,6 +77,7 @@ public:
     void ResetConnections();
     void SetDebug(bool debug);
     bool SetBaudRate(int new_baud_rate);
+    bool CheckBaudRate();
     int WaitForNetworkReady();
 
     std::string GetImei();

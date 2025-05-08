@@ -65,6 +65,21 @@ bool Ml307AtModem::DetectBaudRate() {
     return false;
 }
 
+bool Ml307AtModem::CheckBaudRate() {
+    // Write and Read AT command to detect the current baud rate
+    std::vector<int> baud_rates = {115200, 921600, 460800, 230400, 57600, 38400, 19200, 9600};
+    ESP_LOGI(TAG, "Detecting baud rate...");
+    for (int rate : baud_rates) {
+        uart_set_baudrate(uart_num_, rate);
+        if (Command("AT", 20)) {
+            ESP_LOGI(TAG, "Detected baud rate: %d", rate);
+            baud_rate_ = rate;
+            return true;
+        }
+    }
+    return false;
+}
+
 bool Ml307AtModem::SetBaudRate(int new_baud_rate) {
     if (!DetectBaudRate()) {
         ESP_LOGE(TAG, "Failed to detect baud rate");
