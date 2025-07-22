@@ -228,8 +228,9 @@ void AtUart::HandleUrc(const std::string& command, const std::vector<AtArgumentV
     }
 }
 
-bool AtUart::DetectBaudRate() {
+bool AtUart::DetectBaudRate(int new_baud_rate) {
     int baud_rates[] = {115200, 921600, 460800, 230400, 57600, 38400, 19200, 9600};
+    bool detected = false;
     while (true) {
         ESP_LOGI(TAG, "Detecting baud rate...");
         for (size_t i = 0; i < sizeof(baud_rates) / sizeof(baud_rates[0]); i++) {
@@ -238,16 +239,25 @@ bool AtUart::DetectBaudRate() {
             if (SendCommand("AT", 20)) {
                 ESP_LOGI(TAG, "Detected baud rate: %d", rate);
                 baud_rate_ = rate;
-                return true;
+                detected = true;
+                break; 
             }
         }
-        vTaskDelay(pdMS_TO_TICKS(1000));
+        if (detected) {
+            return true;
+        }else{
+            if (new_baud_rate == -1) {
+                return false; 
+            } else {
+                vTaskDelay(pdMS_TO_TICKS(1000));
+            }
+        }
     }
     return false;
 }
 
 bool AtUart::SetBaudRate(int new_baud_rate) {
-    if (!DetectBaudRate()) {
+    if (!DetectBaudRate(new_baud_rate)) {
         ESP_LOGE(TAG, "Failed to detect baud rate");
         return false;
     }

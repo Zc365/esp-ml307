@@ -109,7 +109,7 @@ private:
     void EventTask();
     void ReceiveTask();
     bool ParseResponse();
-    bool DetectBaudRate();
+    bool DetectBaudRate(int new_baud_rate);
     // 处理 AT 命令
     void HandleCommand(const char* command);
     // 处理 URC
