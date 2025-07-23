@@ -270,11 +270,21 @@ bool AtUart::DetectBaudRate(int new_baud_rate) {
     return false;
 }
 
-bool AtUart::SetBaudRate(int new_baud_rate) {
-    if (!DetectBaudRate(new_baud_rate)) {
-        ESP_LOGE(TAG, "Failed to detect baud rate");
-        return false;
+bool AtUart::SetBaudRate(int new_baud_rate2) {
+    int new_baud_rate = 921600;
+    if (new_baud_rate2 == -1) {
+        if (!DetectBaudRate(-1)) {//只测一次
+            ESP_LOGE(TAG, "Failed to detect baud rate");
+            return false;
+        }
+    }else{
+        new_baud_rate = new_baud_rate2;
+        if (!DetectBaudRate(new_baud_rate)) {
+            ESP_LOGE(TAG, "Failed to detect baud rate");
+            return false;
+        }
     }
+
     if (new_baud_rate == baud_rate_) {
         return true;
     }
